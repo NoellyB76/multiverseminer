@@ -21,6 +21,7 @@ function Player() {
     this.canBreathe = true;
     this.lastOxygenConsumption = Date.now();
 
+
     // ---------------------------------------------------------------------------
     // general
     // ---------------------------------------------------------------------------
@@ -39,8 +40,24 @@ function Player() {
         this.gear.addSlot('feet');
         this.gear.addSlot('miningGear');
         this.totalPower = this.calculatePower();
+		
+		this.level = 0;
+		this.maxHealth = this.calculateMaxHealth();
+		this.health = 5;
+		this.currentXP = 0;
+		this.miningLevel = 0;
+		this.miningXP = 0;
+		this.gatherLevel = 0;
+		this.gatherXP = 0;
+		this.scavengeLevel = 0;
+		this.scavengeXP = 0;		
     };
 
+	this.calculateMaxHealth = function() {
+		this.maxHealth = 5 + this.gear.getStats().health;
+		return this.maxHealth;
+	}
+	
     this.calculatePower = function() {
         this.pickPower = this.gear.getStats()["power"] || 1;
         this.miningLuck = this.gear.getStats()["miningLuck"] || 1;
@@ -66,6 +83,15 @@ function Player() {
         }
     };
 
+	//---------------------------------------------------------------------------
+	//Player Storage Key
+	//---------------------------------------------------------------------------
+	
+    this._getStorageKey = function() {
+        return 'player_' + this.id + '_';
+    };	
+	
+	
     // ---------------------------------------------------------------------------
     // player functions
     // ---------------------------------------------------------------------------	
@@ -334,6 +360,16 @@ function Player() {
         localStorage.playerOxygenConsumption = this.oxygenConsumption;
         localStorage.planetID = game.currentPlanet.data.id;
         localStorage.playerClass = this.playerClass;
+		localStorage["level"] = this.level;
+		localStorage["health"] = this.health;
+		localStorage["maxHealth"] = this.maxHealth;
+		localStorage["currentXP"] = this.currentXP;
+		localStorage["miningXP"] = this.miningXP;
+		localStorage["gatherLevel"] = this.gatherLevel;
+		localStorage["gatherXP"] = this.gatherXP;
+		localStorage["scavengeLevel"] = this.scavengeLevel;
+		localStorage["scavengeXP"] = this.scavengeXP;
+		
     };
 
     this.load = function() {
@@ -347,6 +383,15 @@ function Player() {
         game.currentPlanet = game.planets[utils.loadInt('planetID', 1)];
         game.planetChanged = true;
         this.totalPower = this.calculatePower();
+		this.level = utils.loadFloat('level', 1);
+		this.health = utils.loadFloat('health', 5)];
+		this.maxHealth = this.calculateMaxHealth();
+		this.currentXP = utils.loadFloat('currentXP', 1);
+		this.miningXP = utils.loadFloat('miningXP', 1);
+		this.gatherLevel = utils.loadFloat('gatherLevel', 1);
+		this.gatherXP = utils.loadFloat('gatherXP', 1);
+		this.scavengeLevel = utils.loadFloat('scavengeLevel', 1);
+		this.scavengeXP = utils.loadFloat('scavengeXP', 1);
     };
 
     this.reset = function(fullReset) {
